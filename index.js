@@ -27,9 +27,8 @@ class randomOrg {
     }
 
     generateIntegers(n, min, max, replacement = true, base = 10) {
-        if (min >= max) {
-          return Promise.reject(new Error("Min must be less than max!"))
-        }
+        if (min >= max)
+          return Promise.reject(new Error("Min must be less than max."))
         else
           return this.makeRequest("generateIntegers", {
               n,
@@ -41,53 +40,81 @@ class randomOrg {
     }
 
     generateIntegerSequences(n, length, min, max, replacement = true, base = 10) {
-        if (min >= max) {
-          return Promise.reject(new Error("Min must be less than max!"))
-        }
+        if (min >= max)
+            return Promise.reject(new Error("Min must be less than max."))
+        else if (n < 1 || n > 1000)
+            return Promise.reject(new Error("N must be within the [1, 1000] range."))
         else
-          return this.makeRequest("generateIntegerSequences", {
-              n,
-              length,
-              min,
-              max,
-              replacement,
-              base
-          })
+            return this.makeRequest("generateIntegerSequences", {
+                n,
+                length,
+                min,
+                max,
+                replacement,
+                base
+            })
     }
 
     generateDecimalFractions(n, decimalPlaces, replacement = true) {
-        return this.makeRequest("generateDecimalFractions", {
-          n,
-          decimalPlaces,
-          replacement
-        })
+        if (n < 1 || n > 10000)
+            return Promise.reject(new Error("N must be within the [1, 10000] range."))
+        else if (decimalPlaces < 1 || decimalPlaces > 14)
+            return Promise.reject(new Error("Decimal Places must be within the [1, 14] range."))
+        else
+            return this.makeRequest("generateDecimalFractions", {
+                n,
+                decimalPlaces,
+                replacement
+            })
     }
 
     generateGaussians(n, mean, standardDeviation, significantDigits) {
-        return this.makeRequest("generateGaussians", {
-            n,
-            mean,
-            standardDeviation,
-            significantDigits
-        })
+        if (n < 1 || n > 10000)
+            return Promise.reject(new Error("N must be within the [1, 10000] range."))
+        else if (mean < -1000000 || mean > 1000000)
+            return Promise.reject(new Error("Mean must be within the [-1000000, 1000000] range."))
+        else if (standardDeviation < -1000000 || standardDeviation > 1000000)
+            return Promise.reject(new Error("Standard Deviation must be within the [-1000000, 1000000] range."))
+        else if (significantDigits < 2 || significantDigits > 14)
+            return Promise.reject(new Error("Significant Digits must be within the [2, 14] range."))
+        else
+            return this.makeRequest("generateGaussians", {
+                n,
+                mean,
+                standardDeviation,
+                significantDigits
+            })
     }
 
     generateStrings(n, length, characters, replacement = true) {
-        return this.makeRequest("generateStrings", {
-            n,
-            length,
-            characters,
-            replacement
-        })
+        if (n < 1 || n > 10000)
+            return Promise.reject(new Error("N must be within the [1, 10000] range."))
+        else if (length < 1 || length > 10000)
+            return Promise.reject(new Error("Length must be within the [1, 10000] range."))
+        else if (characters.length > 128) {
+            return Promise.reject(new Error("The maximum number of characters is 128."))
+        }
+        else
+            return this.makeRequest("generateStrings", {
+                n,
+                length,
+                characters,
+                replacement
+            })
     }
 
     generateUUIDs(n) {
-        return this.makeRequest("generateUUIDs", {
-            n
-        })
+        if (n < 1 || n > 1000)
+            return Promise.reject(new Error("N must be within the [1, 1000] range."))
+        else
+            return this.makeRequest("generateUUIDs", {
+                n
+            })
     }
 
     generateBlobs(n, size, format = "base64") {
+        if (n < 1 || n > 100)
+            return Promise.reject(new Error("N must be within the [1, 100] range."))
         return this.makeRequest("generateBlobs", {
             n,
             size,
