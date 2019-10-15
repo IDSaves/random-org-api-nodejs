@@ -6,7 +6,16 @@ class randomOrg {
     constructor(key) {
         this.apiKey = key
         this.echo = () => console.log(this.apiKey)
+
         this.getUsage = () => this.makeRequest("getUsage")
+
+        this.generateSignedIntegers = (n, min, max, userData = null, replacement = true, base = 10) => this.generateIntegers(n, min, max, replacement, base, userData, true)
+        this.generateSignedIntegerSequences = (n, length, min, max, userData = null, replacement = true, base = 10) => this.generateIntegerSequences(n, length, min, max, replacement, base, userData, true)
+        this.generateSignedDecimalFractions = (n, decimalPlaces, userData = null, replacement = true) => this.generateDecimalFractions(n, decimalPlaces, replacement, userData, true)
+        this.generateSignedGaussians = (n, mean, standardDeviation, significantDigits, userData = null) => this.generateGaussians(n, mean, standardDeviation, significantDigits, userData = null, true)
+        this.generateSignedStrings = (n, length, characters, userData = null, replacement = true) => this.generateStrings(n, length, characters, replacement, userData, true)
+        this.generateSignedUUIDs = (n, userData = null) => this.generateUUIDs(n, userData, true)
+        this.generateSignedBlobs = (n, size, userData = null, format = "base64") => this.generateBlobs(n, size, format, userData, true)
     }
 
 
@@ -26,50 +35,58 @@ class randomOrg {
         return resp.data
     }
 
-    //
-    generateIntegers(n, min, max, replacement = true, base = 10) {
+    generateIntegers(n, min, max, replacement = true, base = 10, userData = null,  signed = false) {
         if (min >= max)
           return Promise.reject(new Error("Min must be less than max."))
-        else
-          return this.makeRequest("generateIntegers", {
-              n,
-              min,
-              max,
-              replacement,
-              base
-          })
+        else {
+            let data = {
+                n,
+                min,
+                max,
+                replacement,
+                base,
+            }
+            if (signed) data.userData = userData 
+            return this.makeRequest(`generate${signed ? "Signed" : ""}Integers`, data)
+        }
     }
 
-    generateIntegerSequences(n, length, min, max, replacement = true, base = 10) {
+    generateIntegerSequences(n, length, min, max, replacement = true, base = 10, userData = null, signed = false) {
         if (min >= max)
             return Promise.reject(new Error("Min must be less than max."))
         else if (n < 1 || n > 1000)
             return Promise.reject(new Error("N must be within the [1, 1000] range."))
-        else
-            return this.makeRequest("generateIntegerSequences", {
+        else {
+            let data = {
                 n,
                 length,
                 min,
                 max,
                 replacement,
                 base
-            })
+            }
+            if (signed) data.userData = userData
+            return this.makeRequest(`generate${signed ? "Signed" : ""}IntegerSequences`, data)
+        }
     }
 
-    generateDecimalFractions(n, decimalPlaces, replacement = true) {
+    generateDecimalFractions(n, decimalPlaces, replacement = true, userData = null, signed = false) {
         if (n < 1 || n > 10000)
             return Promise.reject(new Error("N must be within the [1, 10000] range."))
         else if (decimalPlaces < 1 || decimalPlaces > 14)
             return Promise.reject(new Error("Decimal Places must be within the [1, 14] range."))
-        else
-            return this.makeRequest("generateDecimalFractions", {
+        else {
+            let data = {
                 n,
                 decimalPlaces,
                 replacement
-            })
+            }
+            if (signed) data.userData = userData
+            return this.makeRequest(`generate${signed ? "Signed" : ""}DecimalFractions`, data)
+        }
     }
 
-    generateGaussians(n, mean, standardDeviation, significantDigits) {
+    generateGaussians(n, mean, standardDeviation, significantDigits, userData = null, signed = false) {
         if (n < 1 || n > 10000)
             return Promise.reject(new Error("N must be within the [1, 10000] range."))
         else if (mean < -1000000 || mean > 1000000)
@@ -78,16 +95,19 @@ class randomOrg {
             return Promise.reject(new Error("Standard Deviation must be within the [-1000000, 1000000] range."))
         else if (significantDigits < 2 || significantDigits > 14)
             return Promise.reject(new Error("Significant Digits must be within the [2, 14] range."))
-        else
-            return this.makeRequest("generateGaussians", {
+        else {
+            let data = {
                 n,
                 mean,
                 standardDeviation,
                 significantDigits
-            })
+            }
+            if (signed) data.userData = userData
+            return this.makeRequest(`generate${signed ? "Signed" : ""}Gaussians`, data)
+        }
     }
 
-    generateStrings(n, length, characters, replacement = true) {
+    generateStrings(n, length, characters, replacement = true, userData = null, signed = false) {
         if (n < 1 || n > 10000)
             return Promise.reject(new Error("N must be within the [1, 10000] range."))
         else if (length < 1 || length > 10000)
@@ -95,137 +115,40 @@ class randomOrg {
         else if (characters.length > 128) {
             return Promise.reject(new Error("The maximum number of characters is 128."))
         }
-        else
-            return this.makeRequest("generateStrings", {
+        else {
+            let data = {
                 n,
                 length,
                 characters,
                 replacement
-            })
+            }
+            if (signed) data.userData = userData
+            return this.makeRequest(`generate${signed ? "Signed" : ""}Strings`, data)
+        }
     }
 
-    generateUUIDs(n) {
+    generateUUIDs(n, userData = null, signed = false) {
         if (n < 1 || n > 1000)
             return Promise.reject(new Error("N must be within the [1, 1000] range."))
-        else
-            return this.makeRequest("generateUUIDs", {
-                n
-            })
+        else {
+            let data = {n}
+            if (signed) data.userData = userData
+            return this.makeRequest("generateUUIDs", data)
+        }
     }
 
-    generateBlobs(n, size, format = "base64") {
+    generateBlobs(n, size, format = "base64", userData = null, signed = false) {
         if (n < 1 || n > 100)
             return Promise.reject(new Error("N must be within the [1, 100] range."))
-        return this.makeRequest("generateBlobs", {
-            n,
-            size,
-            format
-        })
-    }
-
-    // Signed
-    generateSignedIntegers(n, min, max, replacement = true, base = 10, userData = null) {
-        if (min >= max) {
-        return Promise.reject(new Error("Min must be less than max!"))
+        else {
+            let data = {
+                n,
+                size,
+                format
+            }
+            if (signed) data.userData = userData
+            return this.makeRequest(`generate${signed ? "Signed" : ""}Blobs`, data)
         }
-        else
-        return this.makeRequest("generateSignedIntegers", {
-            n,
-            min,
-            max,
-            replacement,
-            base,
-            userData
-        })
-    }
-
-    generateSignedIntegerSequences(n, length, min, max, replacement = true, base = 10, userData = null) {
-        if (min >= max)
-            return Promise.reject(new Error("Min must be less than max."))
-        else if (n < 1 || n > 1000)
-            return Promise.reject(new Error("N must be within the [1, 1000] range."))
-        else
-            return this.makeRequest("generateSignedIntegerSequences", {
-                n,
-                length,
-                min,
-                max,
-                replacement,
-                base,
-                userData
-            })
-    }
-
-    generateSignedDecimalFractions(n, decimalPlaces, replacement = true, userData = null) {
-        if (n < 1 || n > 10000)
-            return Promise.reject(new Error("N must be within the [1, 10000] range."))
-        else if (decimalPlaces < 1 || decimalPlaces > 14)
-            return Promise.reject(new Error("Decimal Places must be within the [1, 14] range."))
-        else
-            return this.makeRequest("generateSignedDecimalFractions", {
-                n,
-                decimalPlaces,
-                replacement,
-                userData
-            })
-    }
-
-    generateSignedGaussians(n, mean, standardDeviation, significantDigits, userData = null) {
-        if (n < 1 || n > 10000)
-            return Promise.reject(new Error("N must be within the [1, 10000] range."))
-        else if (mean < -1000000 || mean > 1000000)
-            return Promise.reject(new Error("Mean must be within the [-1000000, 1000000] range."))
-        else if (standardDeviation < -1000000 || standardDeviation > 1000000)
-            return Promise.reject(new Error("Standard Deviation must be within the [-1000000, 1000000] range."))
-        else if (significantDigits < 2 || significantDigits > 14)
-            return Promise.reject(new Error("Significant Digits must be within the [2, 14] range."))
-        else
-            return this.makeRequest("generateSignedGaussians", {
-                n,
-                mean,
-                standardDeviation,
-                significantDigits,
-                userData
-            })
-    }
-
-    generateSignedStrings(n, length, characters, replacement = true, userData = null) {
-        if (n < 1 || n > 10000)
-            return Promise.reject(new Error("N must be within the [1, 10000] range."))
-        else if (length < 1 || length > 10000)
-            return Promise.reject(new Error("Length must be within the [1, 10000] range."))
-        else if (characters.length > 128) {
-            return Promise.reject(new Error("The maximum number of characters is 128."))
-        }
-        else
-            return this.makeRequest("generateSignedStrings", {
-                n,
-                length,
-                characters,
-                replacement,
-                userData
-            })
-    }
-
-    generateSignedUUIDs(n, userData = null) {
-        if (n < 1 || n > 1000)
-            return Promise.reject(new Error("N must be within the [1, 1000] range."))
-        else
-            return this.makeRequest("generateSignedUUIDs", {
-                n,
-                userData
-            })
-    }
-
-    generateSignedBlobs(n, size, format = "base64", userData = null) {
-        if (n < 1 || n > 100)
-            return Promise.reject(new Error("N must be within the [1, 100] range."))
-        return this.makeRequest("generateSignedBlobs", {
-            n,
-            size,
-            format,
-            userData
-        })
     }
 
     getResult(serialNumber) {
@@ -240,10 +163,9 @@ class randomOrg {
             signature
         })
     }
-
 }
 
 
 const rnd = new randomOrg(process.env.API_KEY)
 
-rnd.getUsage().then(res => console.log(res.result)).catch(err => console.log(err))
+rnd.generateIntegers(1, 2, 3).then(res => console.log(res)).catch(err => console.log(err))
