@@ -7,6 +7,7 @@ class randomOrg {
         this.apiKey = key
         this.echo = () => console.log(this.apiKey)
 
+        this.getAuth = () => ({login: this.login, password: this.password})
         this.getUsage = () => this.makeRequest("getUsage")
 
         this.generateSignedIntegers = (n, min, max, userData = null, replacement = true, base = 10) => this.generateIntegers(n, min, max, replacement, base, userData, true)
@@ -33,6 +34,11 @@ class randomOrg {
             headers: {'Content-Type': 'application/json; charset=utf-8'}
         })
         return resp.data
+    }
+
+    setAuth(login, password) {
+        this.login = login
+        this.password = password
     }
 
     generateIntegers(n, min, max, replacement = true, base = 10, userData = null,  signed = false) {
@@ -168,4 +174,7 @@ class randomOrg {
 
 const rnd = new randomOrg(process.env.API_KEY)
 
-rnd.generateIntegers(1, 2, 3).then(res => console.log(res)).catch(err => console.log(err))
+// rnd.setAuth("gi", 123)
+// console.log(rnd.getAuth())
+
+// rnd.generateIntegers(1, 2, 3).then(res => console.log(res)).catch(err => console.log(err))
