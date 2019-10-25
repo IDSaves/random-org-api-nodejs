@@ -17,6 +17,9 @@ class randomOrg {
         this.generateSignedStrings = (n, length, characters, userData = null, replacement = true) => this.generateStrings(n, length, characters, replacement, userData, true)
         this.generateSignedUUIDs = (n, userData = null) => this.generateUUIDs(n, userData, true)
         this.generateSignedBlobs = (n, size, userData = null, format = "base64") => this.generateBlobs(n, size, format, userData, true)
+
+        this.delegationAdded = (serviceId, delegatorId, delegateId, delegationKey, handlerSecret) => this.delegationNotification(serviceId, delegatorId, delegateId, delegationKey, handlerSecret)
+        this.delegationRemoved = (serviceId, delegatorId, delegateId, delegationKey, handlerSecret) => this.delegationNotification(serviceId, delegatorId, delegateId, delegationKey, handlerSecret)
     }
 
 
@@ -40,6 +43,8 @@ class randomOrg {
         this.login = login
         this.password = password
     }
+
+    // Basic
 
     generateIntegers(n, min, max, replacement = true, base = 10, userData = null,  signed = false) {
         if (min >= max)
@@ -167,6 +172,53 @@ class randomOrg {
         return this.makeRequest("verifySignature", {
             random,
             signature
+        })
+    }
+
+    // Delegation
+
+    addDelegation(serviceId, delegateId, notifyDelegate = true) {
+        let credentials = this.getAuth()
+        return this.makeRequest("addDelegation", {
+            credentials,
+            serviceId,
+            delegateId,
+            notifyDelegate
+        })
+    }
+
+    removeDelegation(delegationKey, notifyDelegate = true) {
+        let credentials = this.getAuth()
+        return this.makeRequest("removeDelegation", {
+            credentials,
+            delegationKey,
+            notifyDelegate  
+        })
+    }
+
+    listDelegations() {
+        let credentials = this.getAuth()
+        return this.makeRequest("listDelegations", {
+            credentials
+        })
+    }
+
+    setNotificationHandler(handlerUrl, handlerSecret) {
+        let credentials = this.getAuth()
+        return this.makeRequest("setNotificationHandler", {
+            credentials,
+            handlerUrl,
+            handlerSecret
+        })
+    }
+
+    delegationNotification(serviceId, delegatorId, delegateId, delegationKey, handlerSecret) {
+        return this.makeRequest("delegationAdded", {
+            serviceId,
+            delegatorId,
+            delegateId,
+            delegationKey,
+            handlerSecret
         })
     }
 }
