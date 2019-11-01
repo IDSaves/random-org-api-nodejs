@@ -7,7 +7,7 @@ class randomOrg {
         this.apiKey = key
         this.echo = () => console.log(this.apiKey)
 
-        this.getAuth = () => ({login: this.login, password: this.password})
+        this.getAuth = () => (this.login && this.password ? {login: this.login, password: this.password} : "fail")
         this.getUsage = () => this.makeRequest("getUsage")
 
         this.generateSignedIntegers = (n, min, max, userData = null, replacement = true, base = 10) => this.generateIntegers(n, min, max, replacement, base, userData, true)
@@ -179,37 +179,45 @@ class randomOrg {
 
     addDelegation(serviceId, delegateId, notifyDelegate = true) {
         let credentials = this.getAuth()
-        return this.makeRequest("addDelegation", {
-            credentials,
-            serviceId,
-            delegateId,
-            notifyDelegate
-        })
+        if (credentials != "fail")
+            return this.makeRequest("addDelegation", {
+                credentials,
+                serviceId,
+                delegateId,
+                notifyDelegate
+            })
+        else Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 
     removeDelegation(delegationKey, notifyDelegate = true) {
         let credentials = this.getAuth()
-        return this.makeRequest("removeDelegation", {
-            credentials,
-            delegationKey,
-            notifyDelegate  
-        })
+        if (credentials != "fail")
+            return this.makeRequest("removeDelegation", {
+                credentials,
+                delegationKey,
+                notifyDelegate  
+            })
+        else Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 
     listDelegations() {
         let credentials = this.getAuth()
-        return this.makeRequest("listDelegations", {
-            credentials
-        })
+        if (credentials != "fail")
+            return this.makeRequest("listDelegations", {
+                credentials
+            })
+        else Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 
     setNotificationHandler(handlerUrl, handlerSecret) {
         let credentials = this.getAuth()
-        return this.makeRequest("setNotificationHandler", {
-            credentials,
-            handlerUrl,
-            handlerSecret
-        })
+        if (credentials != "fail")
+            return this.makeRequest("setNotificationHandler", {
+                credentials,
+                handlerUrl,
+                handlerSecret
+            })
+        else Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 
     delegationNotification(serviceId, delegatorId, delegateId, delegationKey, handlerSecret) {
@@ -221,12 +229,56 @@ class randomOrg {
             handlerSecret
         })
     }
+
+    // Draw service
+
+    holdDraw(title, recordType, entries, entriesDigest, winnerCount, entryType = "opaque", identicalEntriesPermitted = false, winnerStart = 1, winnerHandling = "remove", showEntries = true, showWinners = true, delegationKey = null) {
+        const credentials = this.getAuth()
+        if (credentials != "fail"){ 
+            let data = {
+                title,
+                recordType,
+                entries,
+                entriesDigest,
+                winnerCount,
+                entryType,
+                identicalEntriesPermitted,
+                winnerStart,
+                winnerHandling,
+                showEntries,
+                showWinners,
+                delegationKey
+            }
+            return this.makeRequest("holdDraw", data)
+        }
+        else 
+            return Promise.reject(new Error("Enter credentials. (setAuth())"))
+    }
+
+    getDraw(drawId, maxEntries = 3000000, delegationKey = null) {
+        let credentials =  this.getAuth()
+        let data = {
+            drawId,
+            maxEntries,
+            credentials: credentials != "auth" ? credentials : null,
+            delegationKey
+        }
+        return this.makeRequest("getDraw", {drawId})
+    }
+
+    listDraws(delegationKey = null) {
+        let credentials = this.getAuth()
+        if (credentials != "auth") 
+            return this.makeRequest("listDraws", {credentials, delegationKey})
+        else 
+            return Promise.reject(new Error("Enter credentials. (setAuth())"))
+    }
 }
 
 
 const rnd = new randomOrg(process.env.API_KEY)
 
 // rnd.setAuth("gi", 123)
-// console.log(rnd.getAuth())
+console.log(rnd.getAuth())
 
 // rnd.generateIntegers(1, 2, 3).then(res => console.log(res)).catch(err => console.log(err))
