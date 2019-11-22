@@ -163,9 +163,7 @@ class randomOrg {
     }
 
     getResult(serialNumber) {
-        return this.makeRequest("getResult", {
-            serialNumber
-        })
+        return this.makeRequest("getResult", { serialNumber })
     }
 
     verifySignature(random, signature) {
@@ -203,9 +201,7 @@ class randomOrg {
     listDelegations() {
         let credentials = this.getAuth()
         if (credentials != "fail")
-            return this.makeRequest("listDelegations", {
-                credentials
-            })
+            return this.makeRequest("listDelegations", { credentials })
         else Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 
@@ -235,7 +231,7 @@ class randomOrg {
     holdDraw(title, recordType, entries, entriesDigest, winnerCount, entryType = "opaque", identicalEntriesPermitted = false, winnerStart = 1, winnerHandling = "remove", showEntries = true, showWinners = true, delegationKey = null) {
         const credentials = this.getAuth()
         if (credentials != "fail"){ 
-            let data = {
+            return this.makeRequest("holdDraw", {
                 title,
                 recordType,
                 entries,
@@ -248,8 +244,7 @@ class randomOrg {
                 showEntries,
                 showWinners,
                 delegationKey
-            }
-            return this.makeRequest("holdDraw", data)
+            })
         }
         else 
             return Promise.reject(new Error("Enter credentials. (setAuth())"))
@@ -257,19 +252,62 @@ class randomOrg {
 
     getDraw(drawId, maxEntries = 3000000, delegationKey = null) {
         let credentials =  this.getAuth()
-        let data = {
+        return this.makeRequest("getDraw", {
             drawId,
             maxEntries,
             credentials: credentials != "auth" ? credentials : null,
             delegationKey
-        }
-        return this.makeRequest("getDraw", {drawId})
+        })
     }
 
     listDraws(delegationKey = null) {
         let credentials = this.getAuth()
         if (credentials != "auth") 
-            return this.makeRequest("listDraws", {credentials, delegationKey})
+            return this.makeRequest("listDraws", { credentials, delegationKey })
+        else 
+            return Promise.reject(new Error("Enter credentials. (setAuth())"))
+    }
+
+    // Giveaway system
+
+    beginGiveaway(description, entries, entriesDigest, rounds, delegationKey = null) {
+        let credentials = this.getAuth()
+        if (credentials != "auth") 
+            return this.makeRequest("beginGiveaway", {
+                credentials,
+                description, 
+                entries, 
+                entriesDigest, 
+                rounds,
+                delegationKey
+            })
+        else 
+            return Promise.reject(new Error("Enter credentials. (setAuth())"))
+    }
+    
+    continueGiveaway(giveawayKey, delegationKey = null) {
+        let credentials = this.getAuth()
+        if (credentials != "auth") 
+            return this.makeRequest("continueGiveaway", {
+                credentials,
+                giveawayKey,
+                delegationKey
+            })
+        else 
+            return Promise.reject(new Error("Enter credentials. (setAuth())"))
+    }
+
+    getGiveaway(giveawayKey) {
+        return this.makeRequest("getGiveaway", { giveawayKey })
+    }
+    
+    listGiveaways(delegationKey = null) {
+        let credentials = this.getAuth()
+        if (credentials != "auth") 
+            return this.makeRequest("listGiveaways", {
+                credentials,
+                delegationKey
+            })
         else 
             return Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
