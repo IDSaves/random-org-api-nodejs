@@ -1,6 +1,6 @@
 # Random.org nodejs api file
-**!! Requires [axios](https://github.com/axios/axios "axios") !!** 
-**!! Before using it read random.org [docs](https://api.random.org/json-rpc/2 "docs") !!**
+###### **!! Requires [axios](https://github.com/axios/axios "axios") !!** 
+###### **!! Before using it read random.org [docs](https://api.random.org/json-rpc/2 "docs") !!**
 
 #### Usage
 
