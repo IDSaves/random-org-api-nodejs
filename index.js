@@ -1,5 +1,4 @@
 const axios = require('axios')
-require('dotenv').config()
 
 class randomOrg {
 
@@ -312,11 +311,3 @@ class randomOrg {
             return Promise.reject(new Error("Enter credentials. (setAuth())"))
     }
 }
-
-
-const rnd = new randomOrg(process.env.API_KEY)
-
-// rnd.setAuth("gi", 123)
-console.log(rnd.getAuth())
-
-// rnd.generateIntegers(1, 2, 3).then(res => console.log(res)).catch(err => console.log(err))
